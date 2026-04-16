@@ -98,10 +98,12 @@ ProcessMessage ReplyBotModule::handleReceived(const meshtastic_MeshPacket &mp)
     const bool isPrimaryChannel = (mp.channel == channels.getPrimaryIndex()) && isBroadcast(mp.to);
     const bool isSecondaryChannel = (mp.channel == 1) && isBroadcast(mp.to);    //also reply to secondary ch1
     const bool isTertiaryChannel = (mp.channel == 2) && isBroadcast(mp.to);    //also reply to secondary ch2
+    const bool isAnySecondaryChannel = (mp.channel >= 1) && isBroadcast(mp.to);    //also reply to any secondary ch
 
     // replybot will reply to dms and in primary and secondary channel 1 and 2
-    if (!isDM && !isPrimaryChannel && !isSecondaryChannel && !isTertiaryChannel) {
-    //    return ProcessMessage::CONTINUE;    // if this line is commented out replybot will reply to dms and in all channels
+    //if (!isDM && !isPrimaryChannel && !isSecondaryChannel && !isTertiaryChannel) {
+    if (!isDM && !isPrimaryChannel && !isAnySecondaryChannel) {
+        return ProcessMessage::CONTINUE;    // if this line is commented out replybot will reply to dms and in all channels
     }
 
     // Ignore empty payloads
@@ -149,7 +151,7 @@ ProcessMessage ReplyBotModule::handleReceived(const meshtastic_MeshPacket &mp)
     sendDm(mp, reply);
 
     char botinfo[96];
-    snprintf(botinfo, sizeof(botinfo), "🤖 replybot triggered by %08x", mp.from);
+    snprintf(botinfo, sizeof(botinfo), "🤖 replybot triggered by %s [%08x]", mp.short_name , mp.from);
     sendBotinfo(mp, botinfo);
     
     return ProcessMessage::CONTINUE;
