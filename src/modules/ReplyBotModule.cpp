@@ -147,6 +147,11 @@ ProcessMessage ReplyBotModule::handleReceived(const meshtastic_MeshPacket &mp)
     //snprintf(reply, sizeof(reply), "🎙️ Mic Check : %d Hops away | RSSI %d | SNR %.1f", hopsAway, rssi, snr);
     snprintf(reply, sizeof(reply), "🤖 test bot > rcv'd: %d hop(s) away | snr %.1f | rssi %d", hopsAway, snr, rssi);
     sendDm(mp, reply);
+
+    char botinfo[96];
+    snprintf(reply, sizeof(botinfo), "🤖 replybot triggered by %d", rx.from);
+    sendBotinfo(mp, botinfo);
+    
     return ProcessMessage::CONTINUE;
 }
 
@@ -199,4 +204,24 @@ void ReplyBotModule::sendDm(const meshtastic_MeshPacket &rx, const char *text)
     memcpy(p->decoded.payload.bytes, text, len);
     service->sendToMesh(p);
 }
+
+// Send a message to own node to inform that replybot was triggered
+void ReplyBotModule::sendBotinfo(const meshtastic_MeshPacket &rx, const char *text)
+{
+    if (!text)
+        return;
+    meshtastic_MeshPacket *p = allocDataPacket();
+    p->to = nodeStatus->nodeNum;
+    p->channel = rx.channel;
+    p->want_ack = false;
+    p->decoded.want_response = false;
+    size_t len = strlen(text);
+    if (len > sizeof(p->decoded.payload.bytes)) {
+        len = sizeof(p->decoded.payload.bytes);
+    }
+    p->decoded.payload.size = len;
+    memcpy(p->decoded.payload.bytes, text, len);
+    service->sendToMesh(p);
+}
+
 #endif // MESHTASTIC_EXCLUDE_REPLYBOT
