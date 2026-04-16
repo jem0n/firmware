@@ -157,11 +157,11 @@ ProcessMessage ReplyBotModule::handleReceived(const meshtastic_MeshPacket &mp)
                         ? node->user.long_name 
                         : "????";
 
-    //if (mp.from != 0 && longName != "????") {
+    if (mp.from != 0 && longName != "????") {
         char botinfo[128];
         snprintf(botinfo, sizeof(botinfo), "🤖 replybot triggered by %s [%08x]", longName, mp.from);
         sendBotinfo(mp, botinfo);
-    //}
+    }
     
     return ProcessMessage::CONTINUE;
 }
