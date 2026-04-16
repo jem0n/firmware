@@ -46,7 +46,7 @@ NRF52 PRO MICRO PIN ASSIGNMENT
 
 // The bluetooth transmit power on the nRF52840 is adjustable from -20dB to +8dB in steps of 4dB
 // so NRF52_BLE_TX_POWER can be set to -20, -16, -12, -8, -4, 0 (default), 4, and 8.
-#define NRF52_BLE_TX_POWER 0
+#define NRF52_BLE_TX_POWER 4
 
 // Number of pins defined in PinDescription array
 #define PINS_COUNT (48)
@@ -193,6 +193,23 @@ settings.
 #define PIN_EINK_DC (32 + 2)
 #define PIN_EINK_RES (32 + 1)
 #define PIN_EINK_BUSY (32 + 6)
+
+
+// ##    ## // start of solar fix logic
+// 1. We redefine the discharge curve for solar nodes (0% to 3.4V) 
+#undef  OCV_ARRAY 
+#define  OCV_ARRAY  4190, 4050, 3990, 3890, 3800, 3720, 3630, 3530, 3480, 3440, 3400 
+
+// 2. Physical mapping for the comparator: P0.31 corresponds to AIN7 
+#define  BATTERY_LPCOMP_INPUT  NRF_LPCOMP_INPUT_7 
+
+// 3. Awakening Threshold (ADAPTED TO DIVISOR 1.73): 
+// We use reference 5/8 of VDD (Value '4'). 
+// Math: VDD(~3.3V) * 5/8 = 2.0625V (Threshold on the pin). 
+// Battery required: 2.0625V * 1.73 = ~3.57V. 
+#define  BATTERY_LPCOMP_THRESHOLD  (nrf_lpcomp_ref_t)4
+// ##    ## // end of solar fix logic
+
 
 #ifdef __cplusplus
 }
