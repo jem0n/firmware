@@ -429,11 +429,14 @@ void ScanI2CTwoWire::scanPort(I2CPort port, uint8_t *address, uint8_t asize)
                         logFoundDevice("INA260", (uint8_t)addr.address);
                         type = INA260;
                     }
-#if HAS_TELEMETRY && !MESHTASTIC_EXCLUDE_ENVIRONMENTAL_SENSOR
-                } else if (detectSHT21SerialNumber(i2cBus, (uint8_t)addr.address)) {
-                    logFoundDevice("SHTXX (SHT2X)", (uint8_t)addr.address);
-                    type = SHTXX;
-#endif
+
+                    // disable shtxx i2c for now due to issue w/ ina219
+//#if HAS_TELEMETRY && !MESHTASTIC_EXCLUDE_ENVIRONMENTAL_SENSOR
+                //} else if (detectSHT21SerialNumber(i2cBus, (uint8_t)addr.address)) {
+                //    logFoundDevice("SHTXX (SHT2X)", (uint8_t)addr.address);
+                //    type = SHTXX;
+//#endif
+                    
                 } else { // Assume INA219 if none of the above ones are found
                     logFoundDevice("INA219", (uint8_t)addr.address);
                     type = INA219;
