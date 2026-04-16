@@ -211,6 +211,9 @@ void ReplyBotModule::sendBotinfo(const meshtastic_MeshPacket &rx, const char *te
     if (!text)
         return;
     meshtastic_MeshPacket *p = allocDataPacket();
+
+    p->which_payload_variant = meshtastic_MeshPacket_decoded_tag;
+    
     p->to = nodeDB->getNodeNum();
     p->channel = rx.channel;
     p->want_ack = false;
@@ -224,10 +227,9 @@ void ReplyBotModule::sendBotinfo(const meshtastic_MeshPacket &rx, const char *te
     }
     p->decoded.payload.size = len;
     memcpy(p->decoded.payload.bytes, text, len);
-
-    p->which_payload_variant = meshtastic_MeshPacket_decoded_tag;
     
-    service->sendToMesh(p);
+    //service->sendToMesh(p);
+    service->processPacket(p, true);
 }
 
 #endif // MESHTASTIC_EXCLUDE_REPLYBOT
