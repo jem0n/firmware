@@ -93,7 +93,7 @@ ProcessMessage ReplyBotModule::handleReceived(const meshtastic_MeshPacket &mp)
     // Accept only direct messages to us or broadcasts on the Primary channel
     // (regardless of modem preset: LongFast, MediumFast, etc).
 
-    uint8_t totalChannels = channels->getNumChannels();
+    uint8_t totalChannels = Channels.getNumChannels();
 
     const uint32_t ourNode = nodeDB->getNodeNum();
     const bool isDM = (mp.to == ourNode);
