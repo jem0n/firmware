@@ -212,15 +212,15 @@ void ReplyBotModule::sendBotinfo(const meshtastic_MeshPacket &rx, const char *te
         return;
     meshtastic_MeshPacket *p = allocDataPacket();
 
-    p->which_payload_variant = meshtastic_MeshPacket_decoded_tag;
+    //p->which_payload_variant = meshtastic_MeshPacket_decoded_tag;
     
     p->to = nodeDB->getNodeNum();
     p->channel = rx.channel;
     p->want_ack = false;
     p->decoded.want_response = false;
 
-    ////p->priority = meshtastic_MeshPacket_Priority_RELIABLE;
-    p->decoded.portnum = meshtastic_PortNum_TEXT_MESSAGE_APP;
+    //p->priority = meshtastic_MeshPacket_Priority_RELIABLE;
+    //p->decoded.portnum = meshtastic_PortNum_TEXT_MESSAGE_APP;
     
     size_t len = strlen(text);
     if (len > sizeof(p->decoded.payload.bytes)) {
