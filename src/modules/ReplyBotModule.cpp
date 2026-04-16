@@ -149,7 +149,7 @@ ProcessMessage ReplyBotModule::handleReceived(const meshtastic_MeshPacket &mp)
     sendDm(mp, reply);
 
     char botinfo[96];
-    snprintf(reply, sizeof(botinfo), "🤖 replybot triggered by %d", rx.from);
+    snprintf(reply, sizeof(botinfo), "🤖 replybot triggered by %d", mp.from);
     sendBotinfo(mp, botinfo);
     
     return ProcessMessage::CONTINUE;
