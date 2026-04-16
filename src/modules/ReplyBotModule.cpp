@@ -211,7 +211,7 @@ void ReplyBotModule::sendBotinfo(const meshtastic_MeshPacket &rx, const char *te
     if (!text)
         return;
     meshtastic_MeshPacket *p = allocDataPacket();
-    p->to = nodeStatus->nodeNum;
+    p->to = nodeDB->getNodeNum();
     p->channel = rx.channel;
     p->want_ack = false;
     p->decoded.want_response = false;
