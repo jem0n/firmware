@@ -230,10 +230,7 @@ void ReplyBotModule::sendBotinfo(const meshtastic_MeshPacket &rx, const char *te
     memcpy(p->decoded.payload.bytes, text, len);
     
     //service->sendToMesh(p);
-    if (service) {
-        // We use the observer pattern which is public
-        service->onReceive.notify(p);
-    }
+    nodeStatus->onPacketReceive.notify(p);
 }
 
 #endif // MESHTASTIC_EXCLUDE_REPLYBOT
