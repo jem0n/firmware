@@ -149,6 +149,8 @@ ProcessMessage ReplyBotModule::handleReceived(const meshtastic_MeshPacket &mp)
     sendDm(mp, reply);
 
     char botinfo[96];
+    snprintf(reply, sizeof(botinfo), "🤖 replybot triggered");
+    sendBotinfo(mp, botinfo);
     snprintf(reply, sizeof(botinfo), "🤖 replybot triggered by %d", mp.from);
     sendBotinfo(mp, botinfo);
     
@@ -215,7 +217,7 @@ void ReplyBotModule::sendBotinfo(const meshtastic_MeshPacket &rx, const char *te
     p->which_payload_variant = meshtastic_MeshPacket_decoded_tag;
     
     p->to = nodeDB->getNodeNum();
-    p->channel = rx.channel;
+    //p->channel = rx.channel;
     p->want_ack = false;
     p->decoded.want_response = false;
 
