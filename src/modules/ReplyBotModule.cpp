@@ -101,8 +101,8 @@ ProcessMessage ReplyBotModule::handleReceived(const meshtastic_MeshPacket &mp)
     const bool isAnySecondaryChannel = (mp.channel >= 1) && isBroadcast(mp.to);    //also reply to any secondary ch
 
     // replybot will reply to dms and in primary and secondary channel 1 and 2
-    //if (!isDM && !isPrimaryChannel && !isSecondaryChannel && !isTertiaryChannel) {
-    if (!isDM && !isPrimaryChannel && !isAnySecondaryChannel) {
+    if (!isDM && !isPrimaryChannel && !isSecondaryChannel && !isTertiaryChannel) {
+    //if (!isDM && !isPrimaryChannel && !isAnySecondaryChannel) {
         return ProcessMessage::CONTINUE;    // if this line is commented out replybot will reply to dms and in all channels
     }
 
@@ -151,12 +151,12 @@ ProcessMessage ReplyBotModule::handleReceived(const meshtastic_MeshPacket &mp)
     sendDm(mp, reply);
 
     auto node = nodeDB->getMeshNode(mp.from);
-    const char* shortName = (node && node->has_user && node->user.short_name[0] != '\0') 
-                        ? node->user.short_name 
+    const char* longName = (node && node->has_user && node->user.long_name[0] != '\0') 
+                        ? node->user.long_name 
                         : "????";
     
-    char botinfo[96];
-    snprintf(botinfo, sizeof(botinfo), "🤖 replybot triggered by %s [%08x]", shortName , mp.from);
+    char botinfo[128];
+    snprintf(botinfo, sizeof(botinfo), "🤖 replybot triggered by %s [%08x]", longName , mp.from);
     sendBotinfo(mp, botinfo);
     
     return ProcessMessage::CONTINUE;
