@@ -149,9 +149,7 @@ ProcessMessage ReplyBotModule::handleReceived(const meshtastic_MeshPacket &mp)
     sendDm(mp, reply);
 
     char botinfo[96];
-    snprintf(botinfo, sizeof(botinfo), "🤖 replybot triggered");
-    sendBotinfo(mp, botinfo);
-    snprintf(botinfo, sizeof(botinfo), "🤖 replybot triggered by %d", mp.from);
+    snprintf(botinfo, sizeof(botinfo), "🤖 replybot triggered by %08x", mp.from);
     sendBotinfo(mp, botinfo);
     
     return ProcessMessage::CONTINUE;
@@ -214,7 +212,7 @@ void ReplyBotModule::sendBotinfo(const meshtastic_MeshPacket &rx, const char *te
         return;
     meshtastic_MeshPacket *p = allocDataPacket();
 
-    p->which_payload_variant = meshtastic_MeshPacket_decoded_tag;
+    //p->which_payload_variant = meshtastic_MeshPacket_decoded_tag;
     
     p->to = nodeDB->getNodeNum();
     //p->channel = rx.channel;
@@ -232,7 +230,8 @@ void ReplyBotModule::sendBotinfo(const meshtastic_MeshPacket &rx, const char *te
     memcpy(p->decoded.payload.bytes, text, len);
     
     //service->sendToMesh(p);
-    service->sendToPhone(p);
+    //service->sendToPhone(p);
+    service->onReceive(p);
 }
 
 #endif // MESHTASTIC_EXCLUDE_REPLYBOT
