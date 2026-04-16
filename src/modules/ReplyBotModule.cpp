@@ -230,8 +230,7 @@ void ReplyBotModule::sendBotinfo(const meshtastic_MeshPacket &rx, const char *te
     memcpy(p->decoded.payload.bytes, text, len);
     
     //service->sendToMesh(p);
-    //service->sendToPhone(p);
-    service->getReceiveObservable().notify(p);
+    service->sendToPhone(p);
 }
 
 #endif // MESHTASTIC_EXCLUDE_REPLYBOT
