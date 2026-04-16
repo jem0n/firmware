@@ -218,16 +218,15 @@ void ReplyBotModule::sendBotinfo(const meshtastic_MeshPacket &rx, const char *te
 
     p->decoded.portnum = meshtastic_PortNum_TEXT_MESSAGE_APP;
     
-    //auto me = nodeDB->getMeshNode(nodeDB->getNodeNum());
-    //p->decoded.variant.data.public_key.size = me->public_key.size;
-    //memcpy(p->decoded.variant.data.public_key.bytes, me->public_key.bytes, me->public_key.size);
-    
     size_t len = strlen(text);
     if (len > sizeof(p->decoded.payload.bytes)) {
         len = sizeof(p->decoded.payload.bytes);
     }
     p->decoded.payload.size = len;
     memcpy(p->decoded.payload.bytes, text, len);
+
+    p->which_payload_variant = meshtastic_MeshPacket_decoded_tag;
+    
     service->sendToMesh(p);
 }
 
