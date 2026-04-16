@@ -93,16 +93,18 @@ ProcessMessage ReplyBotModule::handleReceived(const meshtastic_MeshPacket &mp)
     // Accept only direct messages to us or broadcasts on the Primary channel
     // (regardless of modem preset: LongFast, MediumFast, etc).
 
+    uint8_t totalChannels = channels->getNumChannels();
+
     const uint32_t ourNode = nodeDB->getNodeNum();
     const bool isDM = (mp.to == ourNode);
     const bool isPrimaryChannel = (mp.channel == channels.getPrimaryIndex()) && isBroadcast(mp.to);
     const bool isSecondaryChannel = (mp.channel == 1) && isBroadcast(mp.to);    //also reply to secondary ch1
     const bool isTertiaryChannel = (mp.channel == 2) && isBroadcast(mp.to);    //also reply to secondary ch2
-    const bool isAnySecondaryChannel = (mp.channel >= 1) && isBroadcast(mp.to);    //also reply to any secondary ch
+    const bool isAnySecondaryChannel = (mp.channel <= totalChannels) && isBroadcast(mp.to);    //also reply to any secondary ch
 
     // replybot will reply to dms and in primary and secondary channel 1 and 2
-    if (!isDM && !isPrimaryChannel && !isSecondaryChannel && !isTertiaryChannel) {
-    //if (!isDM && !isPrimaryChannel && !isAnySecondaryChannel) {
+    //if (!isDM && !isPrimaryChannel && !isSecondaryChannel && !isTertiaryChannel) {
+    if (!isDM && !isPrimaryChannel && !isAnySecondaryChannel) {
         return ProcessMessage::CONTINUE;    // if this line is commented out replybot will reply to dms and in all channels
     }
 
