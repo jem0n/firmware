@@ -219,7 +219,7 @@ void ReplyBotModule::sendBotinfo(const meshtastic_MeshPacket &rx, const char *te
     p->want_ack = false;
     p->decoded.want_response = false;
 
-    p->priority = meshtastic_MeshPacket_Priority_RELIABLE;
+    ////p->priority = meshtastic_MeshPacket_Priority_RELIABLE;
     p->decoded.portnum = meshtastic_PortNum_TEXT_MESSAGE_APP;
     
     size_t len = strlen(text);
@@ -230,7 +230,7 @@ void ReplyBotModule::sendBotinfo(const meshtastic_MeshPacket &rx, const char *te
     memcpy(p->decoded.payload.bytes, text, len);
     
     //service->sendToMesh(p);
-    nodeStatus->onPacketReceive.notify(p);
+    service->sendToMesh(p, nodeDB->getNodeNum(), true);
 }
 
 #endif // MESHTASTIC_EXCLUDE_REPLYBOT
