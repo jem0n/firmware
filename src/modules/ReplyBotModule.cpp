@@ -212,7 +212,7 @@ void ReplyBotModule::sendBotinfo(const meshtastic_MeshPacket &rx, const char *te
         return;
     meshtastic_MeshPacket *p = allocDataPacket();
 
-    //p->which_payload_variant = meshtastic_MeshPacket_decoded_tag;
+    p->which_payload_variant = meshtastic_MeshPacket_decoded_tag;
     
     p->to = nodeDB->getNodeNum();
     p->channel = rx.channel;
