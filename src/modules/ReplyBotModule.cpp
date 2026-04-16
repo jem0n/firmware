@@ -150,8 +150,13 @@ ProcessMessage ReplyBotModule::handleReceived(const meshtastic_MeshPacket &mp)
     snprintf(reply, sizeof(reply), "🤖 test bot > rcv'd: %d hop(s) away | snr %.1f | rssi %d", hopsAway, snr, rssi);
     sendDm(mp, reply);
 
+    auto node = nodeDB->getMeshNode(mp.from);
+    const char* shortName = (node && node->has_user && node->user.short_name[0] != '\0') 
+                        ? node->user.short_name 
+                        : "????";
+    
     char botinfo[96];
-    snprintf(botinfo, sizeof(botinfo), "🤖 replybot triggered by %s [%08x]", mp.short_name , mp.from);
+    snprintf(botinfo, sizeof(botinfo), "🤖 replybot triggered by %s [%08x]", shortName , mp.from);
     sendBotinfo(mp, botinfo);
     
     return ProcessMessage::CONTINUE;
