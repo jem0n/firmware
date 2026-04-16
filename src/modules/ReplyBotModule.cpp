@@ -215,6 +215,11 @@ void ReplyBotModule::sendBotinfo(const meshtastic_MeshPacket &rx, const char *te
     p->channel = rx.channel;
     p->want_ack = false;
     p->decoded.want_response = false;
+
+    auto me = nodeDB->getMeshNode(nodeDB->getNodeNum());
+    p->decoded.variant.data.public_key.size = me->public_key.size;
+    memcpy(p->decoded.variant.data.public_key.bytes, me->public_key.bytes, me->public_key.size);
+    
     size_t len = strlen(text);
     if (len > sizeof(p->decoded.payload.bytes)) {
         len = sizeof(p->decoded.payload.bytes);
