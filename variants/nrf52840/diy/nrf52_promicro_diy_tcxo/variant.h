@@ -194,6 +194,13 @@ settings.
 #define PIN_EINK_RES (32 + 1)
 #define PIN_EINK_BUSY (32 + 6)
 
+// ##    ## // minix encoder fw fix
+#define INPUTDRIVER_ENCODER_TYPE 2
+#define INPUTDRIVER_ENCODER_UP (32 + 2) // P1.02
+#define INPUTDRIVER_ENCODER_DOWN (32 + 1) // P1.01
+#define INPUTDRIVER_ENCODER_BTN (32 + 0) // P1.00
+#define UPDOWN_LONG_PRESS_REPEAT_INTERVAL 150
+
 #ifdef __cplusplus
 }
 #endif
