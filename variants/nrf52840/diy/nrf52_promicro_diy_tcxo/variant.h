@@ -50,6 +50,10 @@ NRF52 PRO MICRO PIN ASSIGNMENT
 #define NUM_ANALOG_INPUTS (1)
 #define NUM_ANALOG_OUTPUTS (0)
 
+// The bluetooth transmit power on the nRF52840 is adjustable from -20dB to +8dB in steps of 4dB
+// so NRF52_BLE_TX_POWER can be set to -20, -16, -12, -8, -4, 0 (default), 4, and 8.
+#define NRF52_BLE_TX_POWER 4
+
 // Pin 13 enables 3.3V periphery. If the Lora module is on this pin, then it should stay enabled at all times.
 #define PIN_3V3_EN (0 + 13) // P0.13
 
@@ -189,6 +193,13 @@ settings.
 #define PIN_EINK_DC (32 + 2)
 #define PIN_EINK_RES (32 + 1)
 #define PIN_EINK_BUSY (32 + 6)
+
+// ##    ## // minix encoder fw fix
+#define INPUTDRIVER_ENCODER_TYPE 2
+#define INPUTDRIVER_ENCODER_UP (32 + 2) // P1.02
+#define INPUTDRIVER_ENCODER_DOWN (32 + 1) // P1.01
+#define INPUTDRIVER_ENCODER_BTN (32 + 0) // P1.00
+#define UPDOWN_LONG_PRESS_REPEAT_INTERVAL 150
 
 #ifdef __cplusplus
 }
