@@ -157,9 +157,17 @@ ProcessMessage ReplyBotModule::handleReceived(const meshtastic_MeshPacket &mp)
     // if replybot was triggered then send to self a dm informing who triggered the replybot
     auto node = nodeDB->getMeshNode(mp.from);
 
-    const char* longName = (node && node->user.long_name[0] != '\0') 
-                        ? node->user.long_name 
-                        : "????";
+    char nodeHex[12];
+    if (mp.from != 0) {
+        snprintf(nodeHex, sizeof(nodeHex), "!%08x", mp.from);
+    } else {
+        snprintf(nodeHex, sizeof(nodeHex), "????");
+    }
+
+    const char* longName = nodeHex;
+    if (mp.from == nodeDB->getNodeNum()) {
+        longName = owner.long_name; // Local node's long name from config
+    }
 
     if (mp.from != 0 && strcmp(longName, "????") != 0) {
         char botinfo[128];
