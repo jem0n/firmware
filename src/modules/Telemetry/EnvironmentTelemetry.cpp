@@ -144,6 +144,15 @@ extern void drawCommonHeader(OLEDDisplay *display, int16_t x, int16_t y, const c
 
 static constexpr uint16_t TX_HISTORY_KEY_ENVIRONMENT_TELEMETRY = 0x8002;
 
+// adjust temp and humidity offset based on t-echo sensor values calibrated w/ mijia sensor
+void applyOffset(meshtastic_EnvironmentMetrics *metrics)
+{
+    if (metrics->has_temperature)
+        metrics->temperature -= 1.6;  //temp reading offset (-1.8 previous value)
+    if (metrics->has_relative_humidity)
+        metrics->relative_humidity += 16.5;  //humidity reading offset (+18.5 previous value)
+}
+
 void EnvironmentTelemetryModule::i2cScanFinished(ScanI2C *i2cScanner)
 {
     if (!moduleConfig.telemetry.environment_measurement_enabled && !ENVIRONMENTAL_TELEMETRY_MODULE_ENABLE) {
@@ -602,6 +611,10 @@ bool EnvironmentTelemetryModule::getEnvironmentTelemetry(meshtastic_Telemetry *m
         hasSensor = true;
     }
 #endif
+
+    if (valid)  // apply temp and humidity offset to environment sensor values based on t-echo sensor values calibrated w/ mijia sensor
+        applyOffset(&m->variant.environment_metrics);
+  
     return valid && hasSensor;
 }
 
