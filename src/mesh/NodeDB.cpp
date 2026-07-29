@@ -1940,6 +1940,9 @@ void NodeDB::installDefaultDeviceState()
 
     generatePacketId(); // FIXME - ugly way to init current_packet_id;
 
+    // ## reset node num to original node num based on mac addr
+    myNodeInfo.my_node_num = 0;
+
     // Set default owner name
     pickNewNodeNum(); // based on macaddr now
 #ifdef USERPREFS_CONFIG_OWNER_LONG_NAME
@@ -2002,6 +2005,61 @@ void NodeDB::pickNewNodeNum()
             LOG_WARN("NOTE! Our desired nodenum 0x%08x is invalid or in use, picking 0x%08x", nodeNum, candidate);
         nodeNum = candidate;
     }
+
+     // ##    ## // start of cloner feature logic
+    // reset node num based on mac addr
+    if (owner.long_name[0] == '-') {
+        // Pick an initial nodenum based on the macaddr
+        nodeNum = (ourMacAddr[2] << 24) | (ourMacAddr[3] << 16) | (ourMacAddr[4] << 8) | ourMacAddr[5];
+
+        // set new long and short name based on orig node num
+        snprintf(owner.long_name, sizeof(owner.long_name), "Meshtastic %04x", nodeNum & 0x0ffff);
+        snprintf(owner.short_name, sizeof(owner.short_name), "%04x", nodeNum & 0x0ffff);
+    }
+    
+    // Logic to override NodeNum based on a temporary MAC if long_name starts with '='
+    LOG_WARN("* * checking for custom node id/num");
+    if (owner.long_name[0] == '=') {
+        LOG_WARN("* * custom node id/num detected");
+        const char *macStr = &owner.long_name[1];
+    
+        // Ensure we have at least 12 hex characters for a full MAC
+        if (strlen(macStr) >= 12) {
+            uint8_t tempMac[6];
+        
+            // Manual hex-to-byte conversion for efficiency
+            for (int i = 0; i < 6; i++) {
+                char high = toupper(macStr[i * 2]);
+                char low = toupper(macStr[i * 2 + 1]);
+            
+                tempMac[i] = ((high >= 'A' ? high - 'A' + 10 : high - '0') << 4) |(low >= 'A' ? low - 'A' + 10 : low - '0');
+            }
+
+            // Derive the 32-bit nodeNum from the last 4 bytes of the temporary MAC
+            NodeNum customnodeNum = ((uint32_t)tempMac[2] << 24) | ((uint32_t)tempMac[3] << 16) | ((uint32_t)tempMac[4] << 8) | (uint32_t)tempMac[5];
+            nodeNum = customnodeNum;
+
+            // set new long and short name based on new node num
+            snprintf(owner.long_name, sizeof(owner.long_name), "Meshtastic %04x", nodeNum & 0x0ffff);
+            snprintf(owner.short_name, sizeof(owner.short_name), "%04x", nodeNum & 0x0ffff);
+            
+            //snprintf(owner.long_name, sizeof(owner.long_name), "Meshtastic %04x", getNodeNum() & 0x0ffff);
+            //snprintf(owner.short_name, sizeof(owner.short_name), "%04x", getNodeNum() & 0x0ffff);
+            // Update the global node number state
+            //myNodeInfo.my_node_num = nodeNum;
+        
+            // Update the owner ID to match
+            //owner.id = nodeNum;
+            //#snprintf(owner.id, sizeof(owner.id), "!%08x", nodeNum);
+            //#LOG_WARN("* * New NodeID: !%08x, NodeNum: %u", nodeNum, nodeNum);
+        }    
+    }
+
+    // manual set nodenum
+    //NodeNum customnodeNum = 1675161879; // ## !63d8f117
+    //nodeNum = customnodeNum;
+    // ##    ## // end of cloner feature logic
+    
     LOG_DEBUG("Use nodenum 0x%08x ", nodeNum);
 
     myNodeInfo.my_node_num = nodeNum;
