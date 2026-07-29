@@ -34,7 +34,7 @@
 // Floor for our own position broadcasts when stationary (unchanged beyond the broadcast
 // precision) or fixed_position: identical positions get deduped by traffic management anyway.
 //#define default_position_stationary_broadcast_secs (6 * 60 * 60) // 6hrs [12hrs def]
-#define default_position_stationary_broadcast_secs (12 * 60 * 60) // 60mins def
+#define default_position_stationary_broadcast_secs (12 * 60 * 60) // 12hrs def
 //#define min_default_broadcast_interval_secs 15 * 60 // 15mins [60mins def]
 #define min_default_broadcast_interval_secs IF_ROUTER(ONE_DAY / 2, 60 * 60) // 60mins def
 #define min_default_broadcast_smart_minimum_interval_secs 15 // 15s [5mins def]
