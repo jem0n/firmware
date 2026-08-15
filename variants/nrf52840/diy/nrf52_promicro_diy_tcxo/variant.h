@@ -25,7 +25,8 @@ extern "C" {
 
 // ##    ## // redefine the discharge curve for lifepo4 (0% at 3.15v)
 #undef OCV_ARRAY
-#define OCV_ARRAY 3600, 3400, 3360, 3330, 3310, 3290, 3270, 3250, 3230, 3200, 3150
+//#define OCV_ARRAY 3600, 3400, 3360, 3330, 3310, 3290, 3270, 3250, 3230, 3200, 3150
+#define OCV_ARRAY 3300, 3280, 3260, 3240, 3220, 3200, 3170, 3140, 3100, 3050, 3000
 
 /*
 NRF52 PRO MICRO PIN ASSIGNMENT
