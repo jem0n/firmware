@@ -23,6 +23,10 @@ extern "C" {
 // so NRF52_BLE_TX_POWER can be set to -20, -16, -12, -8, -4, 0 (default), 4, and 8.
 #define NRF52_BLE_TX_POWER 0
 
+// ##    ## // redefine the discharge curve for lifepo4 (0% at 3.15v)
+#undef OCV_ARRAY
+#define OCV_ARRAY 3600, 3400, 3360, 3330, 3310, 3290, 3270, 3250, 3230, 3200, 3150
+
 /*
 NRF52 PRO MICRO PIN ASSIGNMENT
 
