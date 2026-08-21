@@ -23,6 +23,15 @@ extern "C" {
 // so NRF52_BLE_TX_POWER can be set to -20, -16, -12, -8, -4, 0 (default), 4, and 8.
 #define NRF52_BLE_TX_POWER 4
 
+// orig ocv array from v2.26.xx 02-xx-2026 commits
+// #ifndef OCV_ARRAY
+// #define OCV_ARRAY 4190, 4050, 3990, 3890, 3800, 3720, 3630, 3530, 3420, 3300, 3100
+// #endif
+
+// ##    ## // redefine the discharge curve for li-ion
+#undef OCV_ARRAY
+#define OCV_ARRAY 4100, 4050, 3990, 3890, 3800, 3720, 3630, 3530, 3420, 3300, 3100
+
 /*
 NRF52 PRO MICRO PIN ASSIGNMENT
 
