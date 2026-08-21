@@ -376,7 +376,14 @@ template <typename T> void SX126xInterface<T>::startReceive()
     const char *rxMethod = "startReceive";
 #else
     // We use a 16 bit preamble so this should save some power by letting radio sit in standby mostly.
-    int err = lora.startReceiveDutyCycleAuto(preambleLength, 8, MESHTASTIC_RADIOLIB_IRQ_RX_FLAGS);
+    //int err = lora.startReceiveDutyCycleAuto(preambleLength, 8, MESHTASTIC_RADIOLIB_IRQ_RX_FLAGS);
+
+    // sx1262 rx duty cycle mod for power saving 
+    // sx1262 rx duty cycle 8 = disabled, 6 = 75%, 5 = 62.5%, 4 = 50%
+    int err = lora.startReceiveDutyCycleAuto(preambleLength, 8, MESHTASTIC_RADIOLIB_IRQ_RX_FLAGS);  // orig sx1262 rx duty cycle
+    // int err = lora.startReceiveDutyCycleAuto(preambleLength, 8, MESHTASTIC_RADIOLIB_IRQ_RX_FLAGS);  // reduced sx1262 rx duty cycle to 6 [75%] to save power
+    // int err = lora.startReceiveDutyCycleAuto(preambleLength, 4, MESHTASTIC_RADIOLIB_IRQ_RX_FLAGS);  // reduced sx1262 rx duty cycle to 4 [50%] to save power
+  
     const char *rxMethod = "startReceiveDutyCycleAuto";
 #endif
     if (err != RADIOLIB_ERR_NONE)
