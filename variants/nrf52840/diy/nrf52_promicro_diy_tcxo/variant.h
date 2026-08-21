@@ -21,7 +21,7 @@ extern "C" {
 
 // The bluetooth transmit power on the nRF52840 is adjustable from -20dB to +8dB in steps of 4dB
 // so NRF52_BLE_TX_POWER can be set to -20, -16, -12, -8, -4, 0 (default), 4, and 8.
-#define NRF52_BLE_TX_POWER 0
+#define NRF52_BLE_TX_POWER 4
 
 /*
 NRF52 PRO MICRO PIN ASSIGNMENT
