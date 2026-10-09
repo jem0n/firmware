@@ -40,6 +40,8 @@ struct ReplyBotCooldownEntry {
 static constexpr uint8_t REPLYBOT_COOLDOWN_SLOTS = 8;          // ring buffer size
 static constexpr uint32_t REPLYBOT_DM_COOLDOWN_MS = 15 * 1000; // 15 seconds for DMs
 static constexpr uint32_t REPLYBOT_LF_COOLDOWN_MS = 60 * 1000; // 60 seconds for LongFast broadcasts
+static constexpr uint32_t REPLYBOT_DM_COOLDOWN_MS = 1 * 1000; // 1 second for DMs [15s default]
+static constexpr uint32_t REPLYBOT_LF_COOLDOWN_MS = 1 * 1000; // 1 second for LongFast broadcasts [60s default]
 
 static ReplyBotCooldownEntry replybotCooldown[REPLYBOT_COOLDOWN_SLOTS];
 static uint8_t replybotCooldownIdx = 0;
@@ -91,11 +93,19 @@ ProcessMessage ReplyBotModule::handleReceived(const meshtastic_MeshPacket &mp)
     // Accept only direct messages to us or broadcasts on the Primary channel
     // (regardless of modem preset: LongFast, MediumFast, etc).
 
+    uint8_t totalChannels = channels.getNumChannels();
+
     const uint32_t ourNode = nodeDB->getNodeNum();
     const bool isDM = (mp.to == ourNode);
     const bool isPrimaryChannel = (mp.channel == channels.getPrimaryIndex()) && isBroadcast(mp.to);
-    if (!isDM && !isPrimaryChannel) {
-        return ProcessMessage::CONTINUE;
+    const bool isAnySecondaryChannel = (mp.channel < totalChannels) && isBroadcast(mp.to);    //also reply to any secondary ch
+
+    //if (!isDM && !isPrimaryChannel) {
+        //return ProcessMessage::CONTINUE;
+
+    // replybot will reply to dms and in any other channels
+    if (!isDM && !isPrimaryChannel && !isAnySecondaryChannel) {
+        return ProcessMessage::CONTINUE;    // if this line is commented out replybot will reply to dms and in all channels
     }
 
     // Ignore empty payloads
@@ -138,8 +148,31 @@ ProcessMessage ReplyBotModule::handleReceived(const meshtastic_MeshPacket &mp)
 
     // Build the reply message and send it back via DM
     char reply[96];
-    snprintf(reply, sizeof(reply), "🎙️ Mic Check : %d Hops away | RSSI %d | SNR %.1f", hopsAway, rssi, snr);
+    //snprintf(reply, sizeof(reply), "🎙️ Mic Check : %d Hops away | RSSI %d | SNR %.1f", hopsAway, rssi, snr);
+    snprintf(reply, sizeof(reply), "🤖 test bot > rcv'd: %d hop(s) away | snr %.1f | rssi %d", hopsAway, snr, rssi);
     sendDm(mp, reply);
+
+    // if replybot was triggered then send to self a dm informing who triggered the replybot
+    auto node = nodeDB->getMeshNode(mp.from);
+
+    char nodeHex[12];
+    if (mp.from != 0) {
+        snprintf(nodeHex, sizeof(nodeHex), "!%08x", mp.from);
+    } else {
+        snprintf(nodeHex, sizeof(nodeHex), "????");
+    }
+
+    const char* longName = nodeHex;
+    if (mp.from == nodeDB->getNodeNum()) {
+        longName = owner.long_name; // Local node's long name from config
+    }
+
+    if (mp.from != 0 && strcmp(longName, "????") != 0) {
+        char botinfo[128];
+        snprintf(botinfo, sizeof(botinfo), "🤖 replybot triggered by %s [%08x]", longName, mp.from);
+        sendBotinfo(mp, botinfo);
+    }
+    
     return ProcessMessage::CONTINUE;
 }
 
@@ -158,6 +191,18 @@ bool ReplyBotModule::isCommand(const char *msg) const
     if (strncmp(msg, "/hello", 6) == 0 && isEndOrSpace(msg[6]))
         return true;
     if (strncmp(msg, "/test", 5) == 0 && isEndOrSpace(msg[5]))
+        return true;
+    if (strncmp(msg, "?Ping", 5) == 0 && isEndOrSpace(msg[5]))
+        return true;
+    if (strncmp(msg, "?ping", 5) == 0 && isEndOrSpace(msg[5]))
+        return true;
+    if (strncmp(msg, "?Test", 5) == 0 && isEndOrSpace(msg[5]))
+        return true;
+    if (strncmp(msg, "?test", 5) == 0 && isEndOrSpace(msg[5]))
+        return true;
+    if (strncmp(msg, "?Testing", 8) == 0 && isEndOrSpace(msg[8]))
+        return true;
+    if (strncmp(msg, "?testing", 8) == 0 && isEndOrSpace(msg[8]))
         return true;
     return false;
 }
@@ -182,4 +227,26 @@ void ReplyBotModule::sendDm(const meshtastic_MeshPacket &rx, const char *text)
     memcpy(p->decoded.payload.bytes, text, len);
     service->sendToMesh(p);
 }
+
+// send to self a dm informing who triggered the replybot; self dm doesn't get sent over to the mesh and is handled internally
+void ReplyBotModule::sendBotinfo(const meshtastic_MeshPacket &rx, const char *text)
+{
+    if (!text)
+        return;
+    meshtastic_MeshPacket *p = allocDataPacket();
+
+    p->to = nodeDB->getNodeNum();
+    p->want_ack = false;
+    p->decoded.want_response = false;
+
+    size_t len = strlen(text);
+    if (len > sizeof(p->decoded.payload.bytes)) {
+        len = sizeof(p->decoded.payload.bytes);
+    }
+    p->decoded.payload.size = len;
+    memcpy(p->decoded.payload.bytes, text, len);
+
+    service->sendToPhone(p);
+}
+
 #endif // MESHTASTIC_EXCLUDE_REPLYBOT
