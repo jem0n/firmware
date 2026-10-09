@@ -503,7 +503,13 @@ template <typename T> void SX126xInterface<T>::startReceive()
         if (continuousRx)
             return lora.startReceive(RADIOLIB_SX126X_RX_TIMEOUT_INF, MESHTASTIC_RADIOLIB_IRQ_RX_FLAGS);
         // We use a 16 bit preamble so this should save some power by letting radio sit in standby mostly.
-        return lora.startReceiveDutyCycleAuto(preambleLength, 8, MESHTASTIC_RADIOLIB_IRQ_RX_FLAGS);
+        //return lora.startReceiveDutyCycleAuto(preambleLength, 8, MESHTASTIC_RADIOLIB_IRQ_RX_FLAGS);
+        
+        // sx1262 rx duty cycle mod for power saving 
+        // sx1262 rx duty cycle 8 = disabled, 6 = 75%, 5 = 62.5%, 4 = 50%
+        return lora.startReceiveDutyCycleAuto(preambleLength, 8, MESHTASTIC_RADIOLIB_IRQ_RX_FLAGS); // orig sx1262 rx duty cycle
+        // return lora.startReceiveDutyCycleAuto(preambleLength, 6, MESHTASTIC_RADIOLIB_IRQ_RX_FLAGS);  // reduced sx1262 rx duty cycle to 6 [75%] to save power
+        // return lora.startReceiveDutyCycleAuto(preambleLength, 4, MESHTASTIC_RADIOLIB_IRQ_RX_FLAGS);  // reduced sx1262 rx duty cycle to 4 [50%] to save power
 #endif
     };
 
