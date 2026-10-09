@@ -38,8 +38,8 @@ struct ReplyBotCooldownEntry {
 };
 
 static constexpr uint8_t REPLYBOT_COOLDOWN_SLOTS = 8;          // ring buffer size
-static constexpr uint32_t REPLYBOT_DM_COOLDOWN_MS = 15 * 1000; // 15 seconds for DMs
-static constexpr uint32_t REPLYBOT_LF_COOLDOWN_MS = 60 * 1000; // 60 seconds for LongFast broadcasts
+// static constexpr uint32_t REPLYBOT_DM_COOLDOWN_MS = 15 * 1000; // 15 seconds for DMs
+// static constexpr uint32_t REPLYBOT_LF_COOLDOWN_MS = 60 * 1000; // 60 seconds for LongFast broadcasts
 static constexpr uint32_t REPLYBOT_DM_COOLDOWN_MS = 1 * 1000; // 1 second for DMs [15s default]
 static constexpr uint32_t REPLYBOT_LF_COOLDOWN_MS = 1 * 1000; // 1 second for LongFast broadcasts [60s default]
 
