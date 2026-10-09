@@ -162,7 +162,8 @@ meshtastic_MeshPacket *NodeInfoModule::allocReply()
     }
 
     // Use graduated scaling based on active mesh size (30 minute base, scales with congestion coefficient)
-    uint32_t timeoutMs = Default::getConfiguredOrDefaultMsScaled(0, 30 * 60, nodeStatus->getNumOnline());
+    //uint32_t timeoutMs = Default::getConfiguredOrDefaultMsScaled(0, 30 * 60, nodeStatus->getNumOnline());
+    uint32_t timeoutMs = Default::getConfiguredOrDefaultMsScaled(0, 2, nodeStatus->getNumOnline());    //2s cooldown on nodeinfo requests
     // A licensed station's call-sign announcement is a regulatory interval, not a preference: ham mode
     // sets node_info_broadcast_secs to 600 s, which a set-config would otherwise clamp to an hour.
     // Never hold such a station past its own interval, whatever the floor and the scaling say.
